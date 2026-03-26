@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Packages</title>
+</head>
+<body>
+
+<h1>All Packages</h1>
+
+<% allPackages.forEach(pkg => { %>
+    <hr>
+    <h3><%= pkg.name %></h3>
+    <p>Location: <%= pkg.location %></p>
+    <p>Days: <%= pkg.days %> | Nights: <%= pkg.nights %></p>
+    <p>Price: ₹<%= pkg.price %></p>
+    <p>Season: <%= pkg.season %></p>
+    <p>Destination: <%= pkg.destination %></p>
+<% }) %>
+
+</body>
+</html>

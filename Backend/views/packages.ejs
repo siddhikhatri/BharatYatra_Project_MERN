@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packages</title>
+</head>
+<body>
+    <form method="post" action="/addPackagesDynamic">
+        <!-- Enter Package Name : <input type="text" name="name"/>
+        Enter Package Location : <input type="text" name="location"/>
+        Upload Image  : <img src="" alt="image" name="image"/>
+        Enter Days : <input type="number" name="days"/>
+        Enter Nights : <input type="number" name="nights"/>
+        Enter Rating : <input type="number" name="rating"/>
+        Enter Reviews : <input type="number" name="reviews"/>
+        Enter Tags : <input type="checkbox" name="">
+        Enter OriginalPrice : <input type="number" name="originalPrice"/>
+        Enter Price : <input type="number" name="price"/>
+        Enter Discount : <input type="number" name="pname"/>
+        Enter Theme : <input type="checkbox">
+        Enter Season : <input type="radio" name="season" value="Winter"/>Winter
+        <input type="radio" name="season" value="Summer"/>Summer
+        <input type="radio" name="season" value="Monsoon"/>Monsoon
+        Enter Destination : <input type="text" name="destination"/> -->
+
+        <br>
+    Enter Package Name :
+    <input type="text" name="name" required />
+
+    <br><br>
+
+    Enter Package Location :
+    <input type="text" name="location" required />
+
+    <br><br>
+
+    Upload Image URL :
+    <input type="text" name="image" placeholder="Enter image path or URL"  />
+
+    <br><br>
+
+    Enter Days :
+    <input type="number" name="days" />
+
+    <br><br>
+
+    Enter Nights :
+    <input type="number" name="nights"  />
+
+    <br><br>
+
+    Enter Rating :
+    <input type="number" step="0.1" name="rating"  />
+
+    <br><br>
+
+    Enter Reviews :
+    <input type="number" name="reviews"  />
+
+    <br><br>
+
+    <h3>Enter Tags :</h3>
+
+    <input type="checkbox" name="tags" value="Nature" /> Nature
+    <input type="checkbox" name="tags" value="Honeymoon" /> Honeymoon
+    <input type="checkbox" name="tags" value="Family" /> Family
+    <input type="checkbox" name="tags" value="Spiritual" /> Spiritual
+    <input type="checkbox" name="tags" value="Wildlife" /> Wildlife
+    <input type="checkbox" name="tags" value="Heritage" /> Heritage
+    <input type="checkbox" name="tags" value="Adventure" /> Adventure
+
+    <br><br>
+
+    Enter Original Price :
+    <input type="number" name="originalPrice"  />
+
+    <br><br>
+
+    Enter Price :
+    <input type="number" name="price"  />
+
+    <br><br>
+
+    Enter Discount :
+    <input type="number" name="discount"  />
+
+    <br><br>
+
+    <h3>Enter Themes :</h3>
+
+    <input type="checkbox" name="themes" value="Nature" /> Nature
+    <input type="checkbox" name="themes" value="Honeymoon" /> Honeymoon
+    <input type="checkbox" name="themes" value="Family" /> Family
+    <input type="checkbox" name="themes" value="Spiritual" /> Spiritual
+    <input type="checkbox" name="themes" value="Wildlife" /> Wildlife
+    <input type="checkbox" name="themes" value="Heritage" /> Heritage
+    <input type="checkbox" name="themes" value="Adventure" /> Adventure
+
+    <br><br>
+
+    <h3>Enter Season :</h3>
+
+    <input type="radio" name="season" value="Winter"  /> Winter
+    <input type="radio" name="season" value="Summer" /> Summer
+    <input type="radio" name="season" value="Monsoon" /> Monsoon
+
+    <br><br>
+
+    Enter Destination :
+    <input type="text" name="destination"  />
+
+    <br><br>
+
+    <button type="submit">Add Package</button>
+
+
+    </form>
+</body>
+</html>
