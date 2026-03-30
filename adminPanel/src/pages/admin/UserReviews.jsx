@@ -26,7 +26,7 @@ export default function UserReviews() {
 
   const filteredReviews = reviews.filter((rev) =>
     rev.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    rev.packageId?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    rev.packageId?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const deleteReview = async (id) => {
@@ -101,7 +101,7 @@ export default function UserReviews() {
 
                 {/* Package */}
                 <td className="px-6 py-4 font-medium text-gray-900">
-                  {rev.packageId?.name}
+                  {rev.packageId?.name || "Package Deleted"}
                 </td>
 
                 {/* Rating */}

@@ -76,6 +76,25 @@ app.get('/admin/dashboard_stats', async (req, res) => {
   }
 });
 
+// frontend - user home_stats
+app.get('/home_stats', async (req, res) => {
+  try {
+    //Count 
+    const totalPackages = await PackageData.countDocuments();
+    const totalUsers = await UserData.countDocuments();
+    const totalDestination = await BookingData.countDocuments();
+    const totalEnquiries = await EnquiryData.countDocuments();
+
+    res.json({ totalPackages, totalUsers, totalBookings, totalEnquiries });
+  }
+  catch (error) {
+    console.log("Error In Fetching Data", error);
+    res.status(500).json({
+      message: "Server Error"
+    });
+  }
+});
+
 //admin Signup
 app.post("/admin/signup", async (req, res) => {
 
@@ -150,9 +169,9 @@ app.post("/admin/changePassword", async (req, res) => {
 
     await admin.save();
 
-    admin.password = newPassword;
+    // admin.password = newPassword;
 
-    await admin.save();
+    // await admin.save();
 
     res.json({ message: "Password Updated Successfully" });
 
@@ -680,7 +699,7 @@ app.post('/loginUser', async (req, res) => {
 });
 
 //user ChangePassword API
-app.post('/changePassword', async (req, res) => {  // <-- async added
+app.post('/changePassword', async (req, res) => {
   try {
     const { email, currentPassword, newPassword } = req.body;
 
@@ -688,56 +707,59 @@ app.post('/changePassword', async (req, res) => {  // <-- async added
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Find user by email
-    const user = await UserData.findOne({ email });  // <-- await works now
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await UserData.findOne({ email });
 
-    // Check if current password matches
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // ✅ compare old password
     const isMatch = await bcrypt.compare(currentPassword, user.password);
 
     if (!isMatch) {
       return res.status(400).json({ message: "Current password is incorrect" });
     }
 
-    // hash new password
+    // ✅ hash new password
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
+    // ✅ save hashed password ONLY
     user.password = hashedNewPassword;
     await user.save();
 
-    // Update password
-    user.password = newPassword;
-    await user.save();
-
     res.json({ message: "Password updated successfully" });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-
 //user Forgot Password API
 app.post("/forgotpassword", async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email) return res.status(400).json({ message: "Email is required" });
+    // 1. Validate email
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
 
-    // Find user by email
+    // 2. Find user
     const user = await UserData.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    if (!user.password) return res.status(400).json({ message: "User has no password set" });
-
+    // 3. Generate temporary password
     const tempPassword = Math.random().toString(36).slice(-8);
 
+    // 4. Hash password and store in DB
     const hashedTempPassword = await bcrypt.hash(tempPassword, 10);
-
     user.password = hashedTempPassword;
     await user.save();
 
-    // Create transporter
+    // 5. Create transporter
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -746,24 +768,31 @@ app.post("/forgotpassword", async (req, res) => {
       },
     });
 
-    // Mail options
+    // 6. Mail options (🔥 FIXED HERE)
     const mailOptions = {
       from: `"Bharat Yatra" <${process.env.EMAIL_FROM}>`,
-      to: email, // send directly to user
-      subject: "Your Password Recovery",
-      text: `Hello ${user.name},\n\nYour current password is: ${user.password}`
+      to: email,
+      subject: "Password Reset - Bharat Yatra",
+      text: `Hello ${user.name},
+
+Your temporary password is: ${tempPassword}
+
+Please login using this password and change it immediately for security reasons.
+
+- Bharat Yatra Team`,
     };
 
-    // Send email
+    // 7. Send email
     await transporter.sendMail(mailOptions);
 
-    res.json({ message: "Password sent to your email" });
+    // 8. Response
+    res.json({ message: "Temporary password sent to your email" });
+
   } catch (err) {
     console.error("Forgot Password Error:", err);
     res.status(500).json({ message: "Server error: " + err.message });
   }
-});
-
+}); 
 
 
 
@@ -1040,66 +1069,66 @@ app.get("/packages/:id", async (req, res) => {
 //Package Added Dynamically admin adds
 app.post('/addPackageDetailsDynamic', async (req, res) => {
   try {
-    let imageName  = "";
+    let imageName = "";
     let imagesArray = [];
- 
+
     // Single cover image
     if (req.files && req.files.image) {
       const image = req.files.image;
-      imageName   = image.name;
+      imageName = image.name;
       await image.mv("public/Images/" + imageName);
     }
- 
+
     // Gallery images
     if (req.files && req.files.images) {
       const images = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
       for (let img of images) {
-        const fileName =  img.name;
+        const fileName = img.name;
         await img.mv("public/Images/" + fileName);
         imagesArray.push(fileName);
       }
     }
- 
+
     const newPackage = new PackageData({
       ...req.body,
-      image:      imageName,
-      images:     imagesArray,
-      tags:       JSON.parse(req.body.tags),
-      themes:     JSON.parse(req.body.themes),
+      image: imageName,
+      images: imagesArray,
+      tags: JSON.parse(req.body.tags),
+      themes: JSON.parse(req.body.themes),
       bestSeason: JSON.parse(req.body.bestSeason),
       highlights: JSON.parse(req.body.highlights),
-      included:   JSON.parse(req.body.included),
-      excluded:   JSON.parse(req.body.excluded),
-      itinerary:  JSON.parse(req.body.itinerary),
+      included: JSON.parse(req.body.included),
+      excluded: JSON.parse(req.body.excluded),
+      itinerary: JSON.parse(req.body.itinerary),
       departures: req.body.departures ? JSON.parse(req.body.departures) : [],  // NEW
     });
- 
+
     await newPackage.save();
- 
+
     res.status(201).json({ flag: 1, msg: "Package Added Successfully", data: newPackage });
- 
+
   } catch (err) {
     console.log(err);
     res.status(500).json({ flag: 0, msg: "Package Not Added Successfully." });
   }
 });
- 
- 
+
+
 
 app.put('/updatePackage/:id', async (req, res) => {
   try {
     const existing = await PackageData.findById(req.params.id);
     if (!existing) return res.status(404).json({ flag: 0, msg: "Package not found." });
- 
-    let imageName   = req.body.existingImage || existing.image;
+
+    let imageName = req.body.existingImage || existing.image;
     let imagesArray = [];
- 
+
     if (req.files && req.files.image) {
       const image = req.files.image;
-      imageName   = image.name;
+      imageName = image.name;
       await image.mv("public/Images/" + imageName);
     }
- 
+
     if (req.files && req.files.images) {
       const images = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
       for (let img of images) {
@@ -1110,27 +1139,27 @@ app.put('/updatePackage/:id', async (req, res) => {
     } else if (req.body.existingImages) {
       imagesArray = JSON.parse(req.body.existingImages);
     }
- 
+
     const updated = await PackageData.findByIdAndUpdate(
       req.params.id,
       {
         ...req.body,
-        image:      imageName,
-        images:     imagesArray,
-        tags:       JSON.parse(req.body.tags),
-        themes:     JSON.parse(req.body.themes),
+        image: imageName,
+        images: imagesArray,
+        tags: JSON.parse(req.body.tags),
+        themes: JSON.parse(req.body.themes),
         bestSeason: JSON.parse(req.body.bestSeason),
         highlights: JSON.parse(req.body.highlights),
-        included:   JSON.parse(req.body.included),
-        excluded:   JSON.parse(req.body.excluded),
-        itinerary:  JSON.parse(req.body.itinerary),
+        included: JSON.parse(req.body.included),
+        excluded: JSON.parse(req.body.excluded),
+        itinerary: JSON.parse(req.body.itinerary),
         departures: req.body.departures ? JSON.parse(req.body.departures) : existing.departures,  // NEW
       },
       { new: true }
     );
- 
+
     res.status(200).json({ flag: 1, msg: "Package Updated Successfully", data: updated });
- 
+
   } catch (err) {
     console.log(err);
     res.status(500).json({ flag: 0, msg: "Package Not Updated Successfully." });
@@ -1138,31 +1167,31 @@ app.put('/updatePackage/:id', async (req, res) => {
 });
 
 
-app.delete('/deletePackage/:id',async (req,res) => {
-    try{
-      const {id} = req.params;
-      await PackageData.findByIdAndDelete(id);
-      res.status(200).json({msg : "Package Deleted Successfully."})
-    }catch (err) {
+app.delete('/deletePackage/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    await PackageData.findByIdAndDelete(id);
+    res.status(200).json({ msg: "Package Deleted Successfully." })
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to delete package" });
   }
 });
- 
- 
+
+
 
 
 app.post('/bookDeparture/:packageId/:departureId', async (req, res) => {
   try {
     const { packageId, departureId } = req.params;
     const travellers = Number(req.body.travellers) || 1;
- 
+
     const pkg = await PackageData.findById(packageId);
     if (!pkg) return res.status(404).json({ flag: 0, msg: 'Package not found.' });
- 
+
     const departure = pkg.departures.id(departureId);
     if (!departure) return res.status(404).json({ flag: 0, msg: 'Departure slot not found.' });
- 
+
     const seatsLeft = departure.totalSeats - departure.bookedCount;
     if (seatsLeft < travellers) {
       return res.status(400).json({
@@ -1170,13 +1199,13 @@ app.post('/bookDeparture/:packageId/:departureId', async (req, res) => {
         msg: `Only ${seatsLeft} seat(s) left for this departure.`,
       });
     }
- 
+
     departure.bookedCount += travellers;
     await pkg.save();
- 
+
     res.status(200).json({
       flag: 1,
-      msg:  'Seats reserved.',
+      msg: 'Seats reserved.',
       data: {
         departureId,
         seatsLeft: departure.totalSeats - departure.bookedCount,
@@ -1343,8 +1372,8 @@ app.post('/addBookingDetails', authMiddleware, async (req, res) => {
   try {
     const booking = await BookingData.create(req.body);
     res.send({
-      flag:      1,
-      msg:       'Booking Successful',
+      flag: 1,
+      msg: 'Booking Successful',
       bookingId: booking._id,
     });
   } catch (err) {
@@ -1664,7 +1693,7 @@ app.get("/getUserReviews/:email", async (req, res) => {
 app.get("/admin/reviews", async (req, res) => {
 
   const reviews = await ReviewData.find()
-    .populate("packageId");
+    .populate("packageId", "name");
 
   res.json(reviews);
 
@@ -1747,11 +1776,22 @@ app.get("/admin/wishlist", async (req, res) => {
 
 //user removed wishlist so remove from db
 app.delete("/wishlist/remove", async (req, res) => {
-  const { userId, packageId } = req.body;
+  try {
+    const { userId, packageId } = req.body;
 
-  await WishlistData.deleteOne({ userId, packageId });
+    const result = await WishlistData.deleteOne({
+      userId: new mongoose.Types.ObjectId(userId),
+      packageId: new mongoose.Types.ObjectId(packageId),
+    });
 
-  res.json({ message: "Removed" });
+    res.json({
+      message: "Removed",
+      deletedCount: result.deletedCount
+    });
+  } catch (err) {
+    console.log("Delete error:", err);
+    res.status(500).json({ error: "Delete failed" });
+  }
 });
 
 

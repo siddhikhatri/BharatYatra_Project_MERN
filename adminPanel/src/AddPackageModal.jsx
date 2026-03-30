@@ -1097,7 +1097,7 @@ const STEPS = [
   { id: 6, label: "Inclusions",   icon: CheckCircle  },
 ];
 
-const THEMES           = ["Family","Adventure","Spiritual","Nature","Honeymoon","Cultural","Wildlife"];
+const THEMES           = ["Family","Adventure","Spiritual","Nature","Honeymoon","Heritage","Wildlife"];
 const SEASONS          = ["Winter","Summer","Monsoon"];
 const DISCOUNT_OPTIONS = [0,5,10,15,20,25,30,40,50];
 

@@ -7,7 +7,7 @@ export default function Footer() {
     { label: 'Home', path : '/' },
     { label: 'Packages', path : '/packages' },
     { label: 'About Us', path : '/about' },
-    { label: 'Contact Us', contact : '/contact' },
+    { label: 'Contact Us', contact : '/contactus' },
     { label: 'My Bookings', href: '/bookings' },
   ];
 

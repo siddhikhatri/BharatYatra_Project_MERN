@@ -13,6 +13,7 @@ export default function MyBookings() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (!token) {
       openAuthModal("signin");
       navigate("/");

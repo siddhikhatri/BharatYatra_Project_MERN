@@ -6,6 +6,7 @@ import ThemesSection from '/src/components/ThemesSection';
 import AboutUs from './AboutUs';
 import ContactUs from './ContactUs';
 import TestimonialsSection from '/src/components/TestimonialsSection';
+import axios from 'axios';
 
 
 // const carouselDestinations = [
@@ -19,17 +20,46 @@ import TestimonialsSection from '/src/components/TestimonialsSection';
 
 export default function Home() {
   // const [currentIndex, setCurrentIndex] = useState(0);
+
+  const [statsData, setStatsData] = useState({
+      totalPackages: 0,
+      totalUsers: 0,
+    });
+
   const carouselRef = useRef(null);
   const intervalRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  //const [statsData, setStatsData] = useState(null);
 
-  const stats = [
-    { number: '500+', label: 'Happy Travelers', icon: Users },
-    { number: '50+', label: 'Destinations', icon: MapPin },
-    { number: '100+', label: 'Tour Packages', icon: TrendingUp },
+  
+
+  
+  
+
+  useEffect(() => {
+      const fetchStats = async () => {
+        try {
+          const res = await axios.get(
+            "http://localhost:3000/admin/dashboard_stats"
+          );
+          setStatsData(res.data);
+        } catch (error) {
+          console.error("Error fetching stats:", error);
+        }
+      };
+  
+      fetchStats();
+    }, []);
+
+    const stats = [
+    { number: statsData.totalUsers, label: 'Happy Travelers', icon: Users  },
+    { number: '12+', label: 'Destinations', icon: MapPin },
+    { number: statsData.totalPackages, label: 'Tour Packages', icon: TrendingUp ,onClick: () => navigate("/packages")},
     { number: '4.9', label: 'Customer Rating', icon: Star },
   ];
+
+  
 
   //for about us page scroll on home page
   useEffect(() => {

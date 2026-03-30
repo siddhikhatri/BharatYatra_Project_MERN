@@ -390,7 +390,7 @@ export default function Packages() {
                       whileHover={{ y: -10 }}
                       className="group"
                     >
-                      <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                      <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 h-[500px] flex flex-col">
                         {/* Image Container */}
                         <div className="relative h-48 overflow-hidden">
                           <img
@@ -402,7 +402,7 @@ export default function Packages() {
                           {/* Discount Badge */}
                           {/* <div className="absolute top-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full font-bold text-sm shadow-lg">
                             {pkg.discount}% OFF
-                          </div> */}
+                          </div> */} 
 
                           {/* Rating Badge */}
                           
@@ -424,9 +424,9 @@ export default function Packages() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-6">
+                        <div className="p-6 flex flex-col flex-1">
                           {/* Location & Duration */}
-                          <div className="flex items-center justify-between mb-3 text-sm text-gray-600">
+                          <div className="flex items-center justify-between mb-3 text-sm text-black">
                             <div className="flex items-center gap-1">
                               <MapPin size={16} className="text-blue-500" />
                               <span>{pkg.location}</span>
@@ -438,12 +438,12 @@ export default function Packages() {
                           </div>
 
                           {/* Title */}
-                          <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2">
+                          <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 min-h-[56px]">
                             {pkg.name}
                           </h3>
 
                           {/* Tags */}
-                          <div className="flex flex-wrap gap-2 mb-4">
+                          <div className="flex flex-wrap gap-2 mb-4 line-clamp-2 overflow-hidden">
                             {pkg.tags.map((tag) => (
                               <span
                                 key={tag}
@@ -456,7 +456,7 @@ export default function Packages() {
 
                           {/* Price */}
                           <div className="mb-4">
-                            <p className="text-xs text-gray-600 mb-1">Starting from</p>
+                            <p className="text-xs text-black mb-1">Starting from</p>
                             <div className="flex items-center gap-2">
                               <span className="text-2xl font-bold text-blue-600">
                                 ₹{pkg.price.toLocaleString()}
@@ -468,7 +468,7 @@ export default function Packages() {
                           </div>
 
                           {/* Buttons */}
-                          <div>
+                          <div className='mt-auto'>
                             <Link to={`/packages/${pkg.id}`}>
 
                             </Link>

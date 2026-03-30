@@ -6,6 +6,7 @@ import BookingModal from "/src/components/BoookingModal";
 import { useAuth } from "/src/context/AuthContext";
 import axios from "axios";
 import EnquiryModal from "/src/components/EnquiryModal";
+import { useSearchParams } from "react-router-dom";
 
 const FAQ_DATA = [
   {
@@ -91,6 +92,9 @@ export default function PackageDetails() {
   const galleryRef = useRef(null);//for Image Gallery Scroll
   const [showBookingModal, setShowBookingModal] = useState(false);//for booking 
   const [packageData, setPackageData] = useState(null);
+  const [searchParams] = useSearchParams();
+  const reviewParam = searchParams.get("review");
+  const reviewRef = useRef(null);
 
   //const [canReview, setCanReview] = useState(false);
 
@@ -138,6 +142,14 @@ export default function PackageDetails() {
   };
 
   console.log("URL id:", id);
+
+  useEffect(() => {
+  if (reviewParam === "true") {
+    setTimeout(() => {
+      reviewRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 300);
+  }
+}, [reviewParam]);
 
   //  FETCH PACKAGE
   useEffect(() => {
@@ -274,12 +286,12 @@ export default function PackageDetails() {
       <section className="bg-gray-100 px-6 py-6">
         <div className="max-w-7xl mx-auto">
           <div className="relative rounded-3xl overflow-hidden shadow-lg">
-                        
+
             {/* MAIN Single IMAGE */}
             <div className=" w-full h-[400px] overflow-hidden">
               <img
                 src={`http://localhost:3000/Images/${packageData.image}`}
-                                
+
                 alt={packageData.name}
                 className="w-full h-full object-cover"
               />
@@ -666,7 +678,7 @@ export default function PackageDetails() {
 
 
       {/* Ratings & Reviews Section */}
-      <section className="px-6 py-12 bg-gray-50">
+      <section ref={reviewRef} className="px-6 py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="bg-white rounded-2xl p-8 shadow-lg">
 

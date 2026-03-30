@@ -38,10 +38,10 @@ const StatCard = ({ title, value, growth, icon: Icon, color,onClick }) => (
        onClick={onClick}>
         <Icon className="w-6 h-6 text-white" />
       </div>
-      <div className="flex items-center gap-1 text-sm text-green-600">
+      {/* <div className="flex items-center gap-1 text-sm text-green-600">
         <TrendingUp className="w-4 h-4" />
         <span>+{growth}%</span>
-      </div>
+      </div> */}
     </div>
 
     <h3 className="text-3xl font-bold text-black">{value}</h3>
@@ -187,19 +187,19 @@ export default function Dashboard() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase">
+                  <th className="px-6 py-3 text-left text-m font-medium text-black uppercase">
                     ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase">
+                  <th className="px-6 py-3 text-left text-m font-medium text-black uppercase">
                     Customer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase">
+                  <th className="px-6 py-3 text-left text-m font-medium text-black uppercase">
                     Package
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase">
+                  <th className="px-6 py-3 text-left text-m font-medium text-black uppercase">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-black uppercase">
+                  <th className="px-6 py-3 text-left text-m font-medium text-black uppercase">
                     Status
                   </th>
                 </tr>
@@ -241,41 +241,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Top Packages */}
-        <Card>
-          <div className="p-6 border-b border-gray-200 shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Top Packages
-            </h3>
-          </div>
-
-          <div className="p-6 space-y-5">
-            {/* {topPackages.map((pkg) => (
-              <div key={pkg.name} className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium text-gray-900">
-                    {pkg.name}
-                  </span>
-                  <span className="text-gray-600">
-                    {pkg.bookings} bookings
-                  </span>
-                </div>
-
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-cyan-500 rounded-full"
-                    style={{
-                      width: `${(pkg.bookings / 510) * 100}%`,
-                    }}
-                  />
-                </div>
-
-                <div className="text-xs text-gray-600">
-                  Revenue: ₹{pkg.revenue}L
-                </div>
-              </div>
-            ))} */}
-          </div>
-        </Card>
+        
       </div>
     </div>
   );
