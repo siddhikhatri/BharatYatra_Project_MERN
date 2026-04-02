@@ -992,7 +992,7 @@ app.get('/addGoaPackageStaticAdmin', async (req, res) => {
   }
 });
 
-
+  
 
 // for package details that should return with proper id 
 app.get("/packages/:id", async (req, res) => {
