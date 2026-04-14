@@ -6,6 +6,10 @@ const EnquirySchema = mongoose.Schema({
     phone : Number,
     subject : String,
     msg : String,
+    status: {
+        type: String,
+        default: "new"
+    }
 })
 
 module.exports = mongoose.model("EnquiryData",EnquirySchema)

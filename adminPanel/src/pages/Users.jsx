@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Search, MoreVertical, SquareUser, LayoutDashboard, User } from "lucide-react";
+import { Search, MoreVertical, SquareUser, LayoutDashboard, User,Eye,Edit,Trash2 } from "lucide-react";
 import axios from "axios";
-
-
-
 
 
 const getTierColor = (tier) => {
@@ -21,11 +18,10 @@ const getTierColor = (tier) => {
 };
 
 export default function Users() {
-  // const [users] = useState([]);
-
-
+  
   const [users, setUser] = useState([]);
   const [error, setError] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -44,9 +40,7 @@ export default function Users() {
 
   const userStats = [
     { label: "Total Users", value: users.length },
-    // { label: "Premium", value: 2 },
-    // { label: "Gold", value: 2 },
-    // { label: "Silver", value: 2 },
+   
   ];
 
   //Search User Filter
@@ -131,12 +125,6 @@ export default function Users() {
                   {/* <th className="px-6 py-4 text-left text-xs font-medium text-black uppercase">
                     Trips
                   </th> */}
-                  {/* <th className="px-6 py-4 text-left text-xs font-medium text-black uppercase">
-                    Tier
-                  </th> */}
-                  {/* <th className="px-6 py-4 text-left text-xs font-medium text-black uppercase">
-                    Joined
-                  </th> */}
                   <th className="px-6 py-4 text-left    text-black ">
                     Action
                   </th>
@@ -181,31 +169,24 @@ export default function Users() {
                       {user.trips}
                     </td> */}
 
-                    {/* Tier */}
-                    {/* <td className="px-6 py-4">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getTierColor(
-                          user.tier
-                        )}`}
-                      >
-                        {user.tier}
-                      </span>
-                    </td> */}
+                    
 
-                    {/* Joined */}
-                    {/* <td className="px-6 py-4 text-sm text-gray-700">
-                      {user.joined}
-                    </td> */}
+                    
 
-                    {/* Action */}
+                    {/* Actions */}
                     <td className="px-6 py-4 font-medium">
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="p-2 text-gray-600 hover:text-cyan-600"
-                      >
-                        <MoreVertical className="w-4 h-4" />
-                      </motion.button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+                          className="p-2 text-black hover:text-cyan-600" 
+                          onClick={() => setSelectedUser(user)}>
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}  
+                          className="p-2 text-black hover:text-red-600" >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </motion.tr>
                 ))}
@@ -214,6 +195,56 @@ export default function Users() {
           </div>
         </div>
       </motion.div>
+      {selectedUser && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    
+    <div className="bg-white w-[400px] rounded-xl shadow-xl p-6 relative">
+
+      {/* Close Button */}
+      <button
+        onClick={() => setSelectedUser(null)}
+        className="absolute top-3 right-3 text-gray-500 hover:text-black"
+      >
+        ✖
+      </button>
+
+      {/* Profile Image */}
+      <div className="flex flex-col items-center text-center">
+        <img
+          src={`http://localhost:3000/Images/users/${selectedUser.avatar}`}
+          alt="user"
+          className="w-24 h-24 rounded-full border-4 border-cyan-500 shadow-md"
+        />
+
+        {/* Name */}
+        <h2 className="mt-3 text-xl font-bold text-gray-900">
+          {selectedUser.name}
+        </h2>
+
+        
+      </div>
+
+      {/* Divider */}
+      <div className="my-4 border-t"></div>
+
+      {/* Other Details */}
+      <div className="space-y-2 text-sm text-gray-700">
+        {/* <p><b>User ID:</b> {selectedUser._id}</p> */}
+        <p><b>Name:</b> {selectedUser.name}</p>
+        <p><b>Email:</b> {selectedUser.email}</p>
+        <p><b>Phone:</b> {selectedUser.phone}</p>
+        <p><b>Address:</b> {selectedUser.address}</p>
+        <p><b>City:</b> {selectedUser.city}</p>
+        <p><b>Country:</b> {selectedUser.country}</p>
+        
+        {/* Add more fields if available */}
+        {/* <p><b>Joined:</b> {selectedUser.createdAt}</p> */}
+        {/* <p><b>Bookings:</b> {selectedUser.totalBookings}</p> */}
+      </div>
+
+    </div>
+  </div>
+)}
     </div>
   );
 }

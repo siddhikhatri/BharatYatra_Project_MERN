@@ -88,11 +88,3 @@ export const testimonials = [
   },
 ];
 
-// const themes = [
-  //   { name: 'Adventure', emoji: '🏔️', color: 'from-orange-500 to-red-600' },
-  //   { name: 'Beach', emoji: '🏖️', color: 'from-cyan-500 to-blue-600' },
-  //   { name: 'Cultural', emoji: '🏛️', color: 'from-purple-500 to-pink-600' },
-  //   { name: 'Wellness', emoji: '🧘', color: 'from-green-500 to-emerald-600' },
-  //   { name: 'Wildlife', emoji: '🦁', color: 'from-yellow-500 to-orange-600' },
-  //   { name: 'Heritage', emoji: '🕌', color: 'from-red-500 to-pink-600' },
- // ]

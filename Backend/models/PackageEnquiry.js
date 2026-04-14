@@ -8,6 +8,10 @@ const PackageEnquirySchema = mongoose.Schema({
         adults : Number,
         children : Number,
         message : String,
+        status: {
+        type: String,
+        default: "new"
+    }
     }
 )
 module.exports = mongoose.model("PackageEnquiry",PackageEnquirySchema)

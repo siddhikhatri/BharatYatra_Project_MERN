@@ -14,23 +14,23 @@ export function Enquiries() {
 
   const getStatusColor = (status) => {
 
-const s = (status || "new").toLowerCase();
+    const s = (status || "new").toLowerCase();
 
-switch (s) {
-  case "new":
-    return "bg-blue-100 text-blue-700";
+    switch (s) {
+      case "new":
+        return "bg-blue-100 text-blue-700";
 
-  case "replied":
-    return "bg-green-100 text-green-700";
+      case "replied":
+        return "bg-green-100 text-green-700";
 
-  case "closed":
-    return "bg-gray-200 text-gray-700";
+      case "closed":
+        return "bg-gray-200 text-gray-700";
 
-  default:
-    return "bg-gray-100 text-gray-700";
-}
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
 
-};
+  };
 
 
   const filteredEnquiries = enquiries.filter((enquiry) => {
@@ -43,36 +43,33 @@ switch (s) {
     );
   });
 
-  useEffect(() => {
-    const fetchEnquiries = async () => {
-      try {
-        const contactRes = await axios.get("http://localhost:3000/getEnquiries");
-        const packageRes = await axios.get("http://localhost:3000/getPackageEnquiries");
-        // setContactEnquiries(contactRes.data)
-        // setPackageEnquiries(packageRes.data)
-        setContactEnquiries(
-          contactRes.data.map((e) => ({
-            ...e,
-            status: "new"
-          }))
-        );
+  const fetchEnquiries = async () => {
+    try {
+      const contactRes = await axios.get("http://localhost:3000/getEnquiries");
+      const packageRes = await axios.get("http://localhost:3000/getPackageEnquiries");
 
-        setPackageEnquiries(
-          packageRes.data.map((e) => ({
-            ...e,
-            status: "new"
-          }))
-        );
-      }
-      catch (err) {
-        console.log("Error", err);
-        setError("Failed To Fetch Enquiries.");
-      }
+      setContactEnquiries(contactRes.data);
+      setPackageEnquiries(packageRes.data);
+    } catch (err) {
+      console.log("Error", err);
+      setError("Failed To Fetch Enquiries.");
     }
+  };
+
+  useEffect(() => {
     fetchEnquiries();
-
-
   }, []);
+
+  const updateStatus = async (status) => {
+    await axios.put(
+      `http://localhost:3000/updateEnquiryStatus/${selectedEnquiry._id}`,
+      { status }
+    );
+
+    alert("Marked as solved ✅");
+
+    await fetchEnquiries(); 
+  };
 
   return (
     <div className="space-y-6">
@@ -222,16 +219,23 @@ switch (s) {
 
                 {selectedEnquiry.adults && (
                   <p className="text-m font-medium text-black">
-                    <u>Adults :</u>  {selectedEnquiry.adults} <br/>
+                    <u>Adults :</u>  {selectedEnquiry.adults} <br />
                     <u>Children :</u> {selectedEnquiry.children}
                   </p>
                 )}
 
-                
+
 
                 <p className="text-m font-medium text-black">
                   <u>Enquiry Msg :</u>  {selectedEnquiry.msg || selectedEnquiry.message}
                 </p>
+
+                <button
+                  onClick={() => updateStatus("closed")}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg mt-4"
+                >
+                  Mark as Solved
+                </button>
 
               </div>
             ) : (

@@ -264,7 +264,7 @@ export default function BookingDetails() {
                             <td style={{ fontWeight: 600 }}>{t.name}</td>
                             <td>{t.age}</td>
                             <td>{t.phone}</td>
-                            <td>{t.email || "N/A"}</td>
+                            <td>{t.userEmail || localStorage.getItem("") ||  "N/A"}</td>
                           </tr>
                         ))}
                       </tbody>

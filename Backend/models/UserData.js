@@ -1,5 +1,4 @@
 const mongoose =require('mongoose')
-
 const userSchema = mongoose.Schema({
     name: String,
     email: String,
@@ -10,7 +9,5 @@ const userSchema = mongoose.Schema({
     city: String,
     country: String,
     avatar: String
-
 })
-
 module.exports = mongoose.model("UserData",userSchema)

@@ -11,7 +11,7 @@ import {
   Heart,
 } from "lucide-react";
 
-// ✅ correct path (very important)
+//  correct path (very important)
 import { themes } from "../data/travelData";
 
 /* ---------------- Icon Map ---------------- */

@@ -236,7 +236,7 @@ app.post('/contactMail', async (req, res) => {
     // const nodemailer = require("nodemailer");
     const EnquiryDatas = require('./models/EnquiryData');
 
-    const { name, email, phone, subject, msg } = req.body;
+    const { name, email, phone, subject, msg, status } = req.body;
 
     //  Save in Database
     await EnquiryDatas.create({
@@ -245,6 +245,7 @@ app.post('/contactMail', async (req, res) => {
       phone,
       subject,
       msg,
+      status,
       date: new Date()
     });
 
@@ -269,7 +270,11 @@ app.post('/contactMail', async (req, res) => {
         <h2>New Contact Message</h2>
         <p><b>Name:</b> ${name}</p>
         <p><b>Email:</b> ${email}</p>
-        <p><b>Phone:</b> ${phone}</p>
+        <p><b>Phone:</b> 
+      <a href="tel:${phone}" style="color:blue; font-weight:bold; text-decoration:none;">
+    ${phone}
+  </a>
+</p>
         <p><b>Subject:</b> ${subject}</p>
         <p><b>Message:</b> ${msg}</p>
         <br/>
@@ -360,7 +365,11 @@ app.post('/packageEnquiryMail', async (req, res) => {
 <h3>Customer Details</h3>
 <p><b>Name:</b> ${name}</p>
 <p><b>Email:</b> ${email}</p>
-<p><b>Phone:</b> ${phone}</p>
+<p><b>Phone:</b> 
+  <a href="tel:${phone}" style="color:blue; font-weight:bold; text-decoration:none;">
+    ${phone}
+  </a>
+</p>
 
 <h3>Travel Details</h3>
 <p><b>Package:</b> ${packageName}</p>
@@ -414,6 +423,19 @@ app.post('/packageEnquiryMail', async (req, res) => {
       message: "Server Error"
     });
 
+  }
+});
+
+app.put('/updateEnquiryStatus/:id', async (req, res) => {
+  const { status } = req.body;
+
+  try {
+    await EnquiryData.findByIdAndUpdate(req.params.id, { status });
+    await PackageEnquiry.findByIdAndUpdate(req.params.id, { status });
+
+    res.send({ success: true });
+  } catch (err) {
+    res.status(500).send({ success: false });
   }
 });
 
@@ -682,7 +704,7 @@ app.post('/loginUser', async (req, res) => {
     res.json({
       flag: 1,
       msg: "Success",
-      token, // 🔥 IMPORTANT
+      token, 
       user: {
         _id: user._id,
         name: user.name,
@@ -713,17 +735,17 @@ app.post('/changePassword', async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ compare old password
+    //  compare old password
     const isMatch = await bcrypt.compare(currentPassword, user.password);
 
     if (!isMatch) {
       return res.status(400).json({ message: "Current password is incorrect" });
     }
 
-    // ✅ hash new password
+    //  hash new password
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-    // ✅ save hashed password ONLY
+    //  save hashed password ONLY
     user.password = hashedNewPassword;
     await user.save();
 
@@ -768,7 +790,6 @@ app.post("/forgotpassword", async (req, res) => {
       },
     });
 
-    // 6. Mail options (🔥 FIXED HERE)
     const mailOptions = {
       from: `"Bharat Yatra" <${process.env.EMAIL_FROM}>`,
       to: email,
@@ -792,7 +813,7 @@ Please login using this password and change it immediately for security reasons.
     console.error("Forgot Password Error:", err);
     res.status(500).json({ message: "Server error: " + err.message });
   }
-}); 
+});
 
 
 
@@ -992,7 +1013,7 @@ app.get('/addGoaPackageStaticAdmin', async (req, res) => {
   }
 });
 
-  
+
 
 // for package details that should return with proper id 
 app.get("/packages/:id", async (req, res) => {
@@ -1368,14 +1389,131 @@ app.get('/getPackageEnquiries', (req, res) => {
 //   }
 // })
 
+// app.post('/addBookingDetails', authMiddleware, async (req, res) => {
+//   try {
+//     const booking = await BookingData.create(req.body);
+//     res.send({
+//       flag: 1,
+//       msg: 'Booking Successful',
+//       bookingId: booking._id,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.send({ flag: 0, msg: 'Booking Failed' });
+//   }
+// });
+
 app.post('/addBookingDetails', authMiddleware, async (req, res) => {
   try {
     const booking = await BookingData.create(req.body);
+
+    // Extract safely from request
+    const {
+      packageName,
+      userEmail,
+      location,
+      travelers = [],
+      departureDate,
+      endDate,
+      paymentMethod,
+      totalPrice,
+      specialRequests
+    } = req.body;
+
+    // Create transporter
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    // ---------------- ADMIN EMAIL ----------------
+    await transporter.sendMail({
+      from: `"Bharat Yatra" <${process.env.EMAIL_FROM}>`,
+      to: process.env.ADMIN_EMAIL,
+      subject: `🚀 New Booking Received - ${packageName || 'Tour Package'}`,
+      html: `
+      <div style="font-family: Arial; background:#f4f6f8; padding:20px;">
+        <div style="max-width:600px; margin:auto; background:white; border-radius:12px; padding:20px;">
+
+          <h2 style="color:#00A3E1;">New Booking Alert 🚀</h2>
+
+          <p><b>Booking ID:</b> ${booking._id}</p>
+          <p><b>User Email:</b> ${userEmail || 'N/A'}</p>
+          <p><b>Package:</b> ${packageName || 'N/A'}</p>
+          <p><b>Location:</b> ${location || 'N/A'}</p>
+          <p><b>Travelers:</b> ${travelers.length}</p>
+          <p><b>Departure:</b> ${departureDate ? new Date(departureDate).toDateString() : 'N/A'}</p>
+          <p><b>Return:</b> ${endDate ? new Date(endDate).toDateString() : 'N/A'}</p>
+          <p><b>Payment:</b> ${paymentMethod || 'N/A'}</p>
+          <p><b>Total Amount:</b> ₹${totalPrice || 0}</p>
+
+          <p><b>Special Requests:</b> ${specialRequests || 'None'}</p>
+
+          <hr/>
+          <p style="font-size:12px; color:gray;">Check admin panel for full details.</p>
+
+        </div>
+      </div>
+      `,
+    });
+
+    // ---------------- USER EMAIL ----------------
+    await transporter.sendMail({
+      from: `"Bharat Yatra" <${process.env.EMAIL_FROM}>`,
+      to: userEmail,
+      subject: "🎉 Your Booking is Confirmed!",
+      html: `
+      <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:20px;">
+        <div style="max-width:600px; margin:auto; background:white; border-radius:12px; overflow:hidden;">
+
+          <div style="background:#00A3E1; color:white; padding:20px; text-align:center;">
+            <h2 style="margin:0;">Booking Confirmed 🎉</h2>
+            <p style="margin-top:5px;">Get ready for your trip!</p>
+          </div>
+
+          <div style="padding:20px;">
+            <p>Hello Traveler,</p>
+
+            <p>Your booking for <b>${packageName || 'your trip'}</b> has been successfully confirmed.</p>
+
+            <div style="background:#f9fafb; padding:15px; border-radius:10px; margin:15px 0;">
+              <p><b>Booking ID:</b> ${booking._id}</p>
+              <p><b>Destination:</b> ${location || 'N/A'}</p>
+              <p><b>Travelers:</b> ${travelers.length}</p>
+              <p><b>Departure:</b> ${departureDate ? new Date(departureDate).toDateString() : 'N/A'}</p>
+              <p><b>Return:</b> ${endDate ? new Date(endDate).toDateString() : 'N/A'}</p>
+              <p><b>Payment Method:</b> ${paymentMethod ? paymentMethod.toUpperCase() : 'N/A'}</p>
+
+              <p style="font-size:18px; color:#00A3E1; margin-top:10px;">
+                <b>Total Paid: ₹${totalPrice || 0}</b>
+              </p>
+            </div>
+
+            <p>We’re excited to have you onboard 🌴✨</p>
+            <p>Have a safe and amazing journey!</p>
+          </div>
+
+          <div style="text-align:center; padding:15px; font-size:12px; color:#888;">
+            Need help? Contact Bharat Yatra anytime.
+          </div>
+
+        </div>
+      </div>
+      `,
+    });
+
+    // Response
     res.send({
       flag: 1,
       msg: 'Booking Successful',
       bookingId: booking._id,
     });
+
   } catch (err) {
     console.error(err);
     res.send({ flag: 0, msg: 'Booking Failed' });
